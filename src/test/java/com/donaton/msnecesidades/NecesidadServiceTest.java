@@ -2,16 +2,19 @@ package com.donaton.msnecesidades;
 
 import com.donaton.msnecesidades.model.Necesidad;
 import com.donaton.msnecesidades.repository.NecesidadRepository;
+import com.donaton.msnecesidades.service.NecesidadService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import java.time.LocalDate;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-class NecesidadRepositoryTest {
+class NecesidadServiceTest {
+
+    @Autowired
+    private NecesidadService service;
 
     @Autowired
     private NecesidadRepository repository;
@@ -22,51 +25,23 @@ class NecesidadRepositoryTest {
     }
 
     @Test
-    void findByRegion_debeRetornarNecesidadesDeLaRegion() {
-        Necesidad n = new Necesidad();
-        n.setRecurso("ropa");
-        n.setCantidad(10);
-        n.setUbicacion("Sector Norte");
-        n.setRegion("RM");
-        n.setEstado("pendiente");
-        n.setFechaReporte(LocalDate.now());
-        n.setReportadoPor("Juan");
-        repository.save(n);
-
-        List<Necesidad> resultado = repository.findByRegion("RM");
-        assertFalse(resultado.isEmpty());
-        assertEquals("RM", resultado.get(0).getRegion());
+    void crear_debeGuardarNecesidadCorrectamente() {
+        Necesidad n = service.crear("ropa", 10, "Sector Norte", "RM", "Juan");
+        assertNotNull(n.getId());
+        assertEquals("ropa", n.getRecurso());
+        assertEquals("pendiente", n.getEstado());
     }
 
     @Test
-    void findByEstado_debeRetornarNecesidadesPendientes() {
-        Necesidad n = new Necesidad();
-        n.setRecurso("alimento");
-        n.setCantidad(5);
-        n.setUbicacion("Calle 1");
-        n.setRegion("Valpo");
-        n.setEstado("pendiente");
-        n.setFechaReporte(LocalDate.now());
-        n.setReportadoPor("María");
-        repository.save(n);
-
-        List<Necesidad> resultado = repository.findByEstado("pendiente");
-        assertFalse(resultado.isEmpty());
+    void listar_debeRetornarNecesidades() {
+        service.crear("alimento", 5, "Calle 1", "Valpo", "María");
+        List<Necesidad> lista = service.listar();
+        assertFalse(lista.isEmpty());
     }
 
     @Test
-    void findByRecurso_debeRetornarNecesidadesPorRecurso() {
-        Necesidad n = new Necesidad();
-        n.setRecurso("medicamento");
-        n.setCantidad(15);
-        n.setUbicacion("Av. Sur");
-        n.setRegion("RM");
-        n.setEstado("pendiente");
-        n.setFechaReporte(LocalDate.now());
-        n.setReportadoPor("Pedro");
-        repository.save(n);
-
-        List<Necesidad> resultado = repository.findByRecurso("medicamento");
-        assertFalse(resultado.isEmpty());
+    void crear_debeTenerFechaDeHoy() {
+        Necesidad n = service.crear("medicamento", 20, "Av. Sur", "RM", "Pedro");
+        assertEquals(java.time.LocalDate.now(), n.getFechaReporte());
     }
 }
