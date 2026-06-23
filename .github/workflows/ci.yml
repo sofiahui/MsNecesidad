@@ -23,11 +23,8 @@ jobs:
       - name: Dar permisos a mvnw
         run: chmod +x mvnw      
 
-      - name: Ejecutar tests y generar reporte de cobertura
-        run: ./mvnw test jacoco:report
-
-      - name: Verificar cobertura mínima 60%
-        run: ./mvnw jacoco:check
+      - name: Ejecutar tests, generar reporte y verificar cobertura
+        run: ./mvnw clean verify
 
       - name: Subir reporte de cobertura
         uses: actions/upload-artifact@v4
